@@ -1,10 +1,12 @@
 import os
+import sys
 from threading import Thread
 import pandas as pd
 import random
 coverage = 0
 
 
+file_path = sys.argv
 input_classname = "Calcolatrice"
 junit_path = "./src/test/java/" + input_classname
 
@@ -20,8 +22,11 @@ def caso_base(input_classname, time_limit, nomeregr, nomeerr, seed, junit_path):
 def caso_medio(input_classname, junit_path):
     i = 0
     coverage = 0
-    I_MAX = 100
-    while coverage < 0.90 and i < I_MAX:
+    old_coverage = 0
+    I_MAX = 50
+    DELTA = 0.05
+    MAX_COVERAGE = 0.90
+    while coverage < MAX_COVERAGE and i != I_MAX:
         nomeerr = "Error" + str(i)
         nomeregr = "Regression" + str(i)
 
@@ -33,7 +38,12 @@ def caso_medio(input_classname, junit_path):
 
         coverage = inst_covered[0] / (inst_missed[0] + inst_covered[0])
 
-        i += 1
+        #valutazione saturazione
+        if(abs(old_coverage-coverage) <= DELTA): 
+            i += 1
+        else:
+            i=0
+        old_coverage=coverage
 
 
 caso_medio(input_classname, junit_path)
